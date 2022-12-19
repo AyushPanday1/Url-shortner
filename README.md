@@ -20,6 +20,10 @@ Phase 2-
 
 It takes the url code and after checking it in cache or mongo db it redirects you to that particular Url.
 
+### Note :
+
+I have used redis for caching purpose in this project for making the user interaction more powerful and time efficient.
+
 
 
 
