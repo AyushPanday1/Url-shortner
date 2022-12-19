@@ -7,4 +7,19 @@
 
 <img align="right" alt="Coding" width="400" src="https://user-images.githubusercontent.com/114577936/208366880-d42dc0cb-ae0e-4455-b97c-4722a6e34d33.jpg">
 
-Packeges - Shortid , mongoose , axios , util and redis(Caching).
+Packages - Shortid , mongoose , axios , util and redis(Caching).
+
+### Approach:
+Phase 1-
+
+It takes the long url in frontend.
+Then it checks with the axios call for right url validation that exists.
+It creates a unique urlcode with base url and returns it to the user.
+
+Phase 2-
+
+It takes the url code and after checking it in cache or mongo db it redirects you to that particular Url.
+
+
+
+
