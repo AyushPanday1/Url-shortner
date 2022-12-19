@@ -1,7 +1,7 @@
 
-### By this project you can shorten the long url into a simpler url code with base url.
+### ***By this project you can shorten the long url into a simpler url code with base url.
 
-### ***Description***:
+### Description:
 
 
 
