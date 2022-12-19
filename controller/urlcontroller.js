@@ -1,6 +1,7 @@
 const urlmodel = require('../model/urlmodel');
 const axios = require('axios');
 const shortid = require('shortid');
+const {SET_ASYNC,GET_ASYNC} = require('../redis/redis.js')
 
 /*VALIDATION FOR EMPTY URL IN BODY_______________________________________________ */
 
@@ -27,10 +28,20 @@ const createurl = async function (req, res) {
 
         if (!isValidurltype(longurl)) return res.status(400).send({ status: false, message: "Please pass  valid long url in data." })
 
+        /*CHECKING IN CACHE__________________________________________________ */
+        
+        let cachedData = await GET_ASYNC(`${urlCode}`);
+        if(cachedData){
+            return res.status(200).send({status:true,message:"Cached data",data:JSON.parse(cachedData)})
+        }
+
         /*CHECKING IF IT IS ALREADY IN DB____________________________________ */
         let findindb = await urlmodel.findOne({ longurl }).select({ _id: 0, longurl: 1, shorturl: 1, urlcode: 1 })
 
-        if (findindb) return res.status(200).send({ status: true, message: "Data from db", data: findindb });
+        /*SETTING IN CACHE___________________________________________________ */
+        if (findindb){
+            await SET_ASYNC(`${longUrl}`, 60 * 5, JSON.stringify(findindb))
+            return res.status(200).send({ status: true, message: "Data from db", data: findindb })}
 
         /*TAKING THE BASE URL FROM HEADERS IN HOST___________________________ */
         let baseurl = req.headers.host;
@@ -57,6 +68,7 @@ const createurl = async function (req, res) {
         urlinfo.longurl = longurl;
         urlinfo.shortUrl = shortUrl;
 
+        await SET_ASYNC(`${longUrl}`, 60 * 5, JSON.stringify(urlinfo))
         return res.status(201).send({ status: true, message: "Successfully created", data: urlinfo });
 
     }
@@ -71,16 +83,24 @@ const redirectToUrl = async function (req, res) {
     try {
         const urlCode = req.params.urlCode;
 
-        if (!urlcode) return res.status(400).send({ status: false, message: "Please pass urlcode in params." })
+        if (!urlCode) return res.status(400).send({ status: false, message: "Please pass urlcode in params." })
 
         /*VALIDATION FOR SHORTID CODE __________________________________ */
         if (!shortid.isValid(urlCode)) return res.status(400).send({ status: false, message: "Urlcode is invalid." })
+
+        /*CHECKING IN CACHE_____________________________________________ */
+        let cachedData = await GET_ASYNC(`${urlCode}`)
+        if (cachedData) {
+          let parshingCachedData = JSON.parse(cachedData)
+          return res.status(302).redirect(parshingCachedData)
+        }
 
         const findindb = await urlmodel.findOne({urlCode});
 
         if(!findindb) return res.status(404).send({status:false,messasge:"Url not found."})
 
         /*REDIRECTING TO ORIGINAL URL___________________________________ */
+        await SET_ASYNC(`${urlCode}`, 60 * 5, JSON.stringify(findindb.longUrl))
         return res.status(302).redirect(findindb.longurl)
     }
 

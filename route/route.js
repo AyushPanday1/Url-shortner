@@ -14,7 +14,7 @@ router.post('/createurlcode' , createurl)
 
 /*SECOND API______________________________ */
 
-router.get('/redirect' , redirectToUrl)
+router.get('/redirect/:urlCode' , redirectToUrl)
 
 /*End point_______________________________ */
 
