@@ -1,6 +1,6 @@
-###Project- Open to Intern : https://github.com/AyushPanday1/Open-to-intern.git
+##Project- Open to Intern : https://github.com/AyushPanday1/Open-to-intern.git
 
-###Url shortner
+##Url shortner
 ### ***By this project you can shorten the long url into a simpler url code with base url.***
 
 ### Description:
